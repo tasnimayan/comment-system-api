@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
 const config = require('./config/env');
+const routes = require('./routes');
 
 const {
   errorHandler,
@@ -32,6 +33,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 
 app.use('/api/', limiter);
+
+app.use('/api', routes);
 
 app.use(notFoundHandler);
 
