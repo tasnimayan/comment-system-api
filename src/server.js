@@ -1,8 +1,10 @@
 const app = require('./app');
+const connectDB = require('./config/database');
 const config = require('./config/env');
 
 const startServer = async () => {
   try {
+    await connectDB();
 
     const server = app.listen(config.port, () => {
       console.log(`Server is running on port ${config.port} in ${config.nodeEnv} mode`);
