@@ -13,7 +13,6 @@ const {
 class CommentService {
   async createComment(commentData, userId) {
     const { content, pageId, parentCommentId } = commentData;
-
     if (parentCommentId) {
       const parentComment = await commentRepository.findById(parentCommentId);
       if (!parentComment) {
@@ -24,13 +23,14 @@ class CommentService {
       }
     }
 
+
     const comment = await commentRepository.createComment({
       content,
       pageId,
       author: userId,
       parentComment: parentCommentId || null,
     });
-
+    
     const populatedComment = await commentRepository.findById(comment._id);
     return populatedComment;
   }

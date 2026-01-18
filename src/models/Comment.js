@@ -21,18 +21,24 @@ const commentSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
-    likes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
-    dislikes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
+    likes: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+      ],
+      default: [],
+    },
+    dislikes: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+      ],
+      default: [],
+    },
     parentComment: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Comment',
@@ -61,11 +67,11 @@ commentSchema.index({ pageId: 1, createdAt: -1 });
 commentSchema.index({ parentComment: 1, createdAt: -1 });
 
 commentSchema.virtual('likesCount').get(function () {
-  return this.likes.length;
+  return this.likes?.length || 0;
 });
 
 commentSchema.virtual('dislikesCount').get(function () {
-  return this.dislikes.length;
+  return this.dislikes?.length || 0;
 });
 
 commentSchema.virtual('replies', {
