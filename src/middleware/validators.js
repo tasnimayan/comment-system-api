@@ -1,5 +1,6 @@
-const { body, validationResult } = require('express-validator');
+const { body, param, query, validationResult } = require('express-validator');
 const { ValidationError } = require('../utils/errors');
+const { SORT_OPTIONS } = require('../utils/sortUtils');
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -38,7 +39,74 @@ const loginValidation = [
   validate,
 ];
 
+
+const createCommentValidation = [
+  body('content')
+    .trim()
+    .notEmpty()
+    .withMessage('Comment content is required')
+    .isLength({ min: 1, max: 2000 })
+    .withMessage('Comment must be between 1 and 2000 characters'),
+  body('pageId')
+    .trim()
+    .notEmpty()
+    .withMessage('Page ID is required'),
+  body('parentCommentId')
+    .optional({ nullable: true })
+    .isMongoId()
+    .withMessage('Invalid parent comment ID'),
+  validate,
+];
+
+const updateCommentValidation = [
+  param('id')
+    .isMongoId()
+    .withMessage('Invalid comment ID'),
+  body('content')
+    .trim()
+    .notEmpty()
+    .withMessage('Comment content is required')
+    .isLength({ min: 1, max: 2000 })
+    .withMessage('Comment must be between 1 and 2000 characters'),
+  validate,
+];
+
+const commentIdValidation = [
+  param('id')
+    .isMongoId()
+    .withMessage('Invalid comment ID'),
+  validate,
+];
+
+const getCommentsValidation = [
+  query('pageId')
+    .trim()
+    .notEmpty()
+    .withMessage('Page ID is required'),
+  query('page')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('Page must be a positive integer'),
+  query('limit')
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage('Limit must be between 1 and 100'),
+  query('sort')
+    .optional()
+    .isIn(Object.values(SORT_OPTIONS))
+    .withMessage(`Sort must be one of: ${Object.values(SORT_OPTIONS).join(', ')}`),
+  query('parentCommentId')
+    .optional({nullable: true})
+    .isMongoId()
+    .withMessage('Invalid parent comment ID'),
+  validate,
+];
+
 module.exports = {
   registerValidation,
   loginValidation,
+  createCommentValidation,
+  updateCommentValidation,
+  commentIdValidation,
+  getCommentsValidation,
 };
